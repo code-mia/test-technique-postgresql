@@ -53,9 +53,20 @@ BEGIN
     JOIN louis_v005.crawl c ON s.crawl_id = c.id
     JOIN louis_v005.html_content h ON c.md5hash = h.md5hash
     WHERE
-        h.content LIKE '%' || keyword || '%'
+        h.content ILIKE '%' || keyword || '%'
     ORDER BY s.score DESC
     LIMIT 10;
 END;
 $$ LANGUAGE plpgsql;
 ```
+
+1. Rechercher du texte (WHERE):
+   - Complexité : O(n), n est la taille de la table `html_content`.
+
+3. Jointures :
+   - Complexité : peut varier de O(n*log(n)) à O(n^2) en fonction de la taille des tables
+
+4. Tri :
+   - Complexité : dépend du nombre de lignes à trier. Dans ce cas, avec une limite de 10, la complexité du tri est O(10) = O(1)
+
+La complexité de la fonction dépend de la complexité la plus élevée parmi ces étapes. On remarque que la complexité est majoritairement déterminée par la recherche de texte (O(n)) et par les jointures (O(n*log(n)) à O(n^2)). Il serait nécessaire d'optimiser au maximum la fonction pour des table ayant une grosse quantité de données.

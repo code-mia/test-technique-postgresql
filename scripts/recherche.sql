@@ -10,7 +10,7 @@ BEGIN
     JOIN louis_v005.crawl c ON s.crawl_id = c.id
     JOIN louis_v005.html_content h ON c.md5hash = h.md5hash
     WHERE
-        h.content LIKE '%' || keyword || '%'
+        h.content ILIKE '%' || keyword || '%'
     ORDER BY s.score DESC
     LIMIT 10;
 END;
