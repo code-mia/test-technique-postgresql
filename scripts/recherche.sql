@@ -16,4 +16,5 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+--Test de la fonction recherche
 select * from recherche('documents') 

@@ -11,16 +11,31 @@
 Voici le diagramme de la structure relationnelle des tables du schéma louis_v005 :
 ![ERDiagram](bd.png)
 En analysant la structure, on peut voir que la table `crawl` contient les informations de base de chaque page web, comme l'url, le titre etc.
-La table `html_content` contient le contenu html de chaque page web. 
-La table `script` contient les scripts de chaque page web.
-La table `link` contient les liens de chaque page web.
-La table `chunk` fait référence à un morceau du contenu d'une page web
+La table `html_content` contient le contenu html de chaque page web, il a un hash md5 et un contenu.
+La table `chunk` fait référence à un morceau du contenu d'une page web, il a un titre et un contenu.
+La table `html_content_to_chunk` est une table de jointure entre  `html_content` et `chunk`. Cela signifie que chaque contenu hashé  dans la table `html_content` est associé à un ou plusieurs contenu dans la table `chunk`.
+La table `link` contient les liens de chaque page web, avec une source et une destination.
+La table `token` semble faire référence aux balises html.
+La table `default_chunks` semble être une table qui à un url associe un chunk.
+La table `ada_002` semble être une table qui associe un token à un embedding c'est à dire un vecteur de nombres réels qui sert à représenter un mot dans un espace vectoriel.
 
-D'abord, on peut voir qu'il y'a une relation de dépendance entre la table `link` et `crawl`, `link` contient un "source_crawl" et une "destination_crawl" ce qui signifie que chaque lien a une page web source et une page web de destination.
 
-Ensuite, on peut voir qu'il y'a une relation de dépendance entre la table `html_content` et `html_content_to_chunk` mais également entre `html_content_to_chunk` et `chunk`. Cela signifie que chaque contenu hashé  dans la table `html_content` est associé à un contenu dans la table `chunk`.
 
 ### Quelle distribution prennent les valeurs de longueur du contenu?
+J'ai créé une vue qui contient la longueur du contenu de chaque ligne crawl.
+Grâce à celle ci on remarque que la valeur maximum est 1 206 285 et la valeur minimum 210.
+
+```sql
+CREATE OR REPLACE VIEW "mia.ben-redjeb.1@ens.etsmtl.ca"."longueurContenu" as 
+SELECT
+    c.id AS crawl_id,
+    LENGTH(h.content) AS longueur
+FROM louis_v005.crawl c
+JOIN louis_v005.html_content h ON c.md5hash = h.md5hash;
+```
+
+J'ai réalisé un histogramme de la vue précédente. Voici le résultat :
+![Histogramme](histogram.png)
 
 ### Expliquer le calcul en fonction de la distribution spécifique des valeurs de longueurs de html_content script
 
